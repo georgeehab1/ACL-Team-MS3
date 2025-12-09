@@ -1,0 +1,12 @@
+MATCH (t:Traveller {gender: 'Female', type: 'Solo'})-[:WROTE]->(r:Review)-[:REVIEWED]->(h:Hotel)
+WITH t.age AS age_group, h, 
+     avg(r.score_cleanliness + r.score_comfort + r.score_facilities) AS avg_review_score, 
+     (h.cleanliness_base + h.comfort_base + h.facilities_base) AS base_quality_score
+WHERE base_quality_score >= avg_review_score
+WITH age_group, h, 
+     ((base_quality_score - avg_review_score) / avg_review_score) * 100 AS improvement_percentage
+RETURN age_group, 
+       round(min(improvement_percentage), 2) AS min_improve, 
+       round(max(improvement_percentage), 2) AS max_improve, 
+       round(avg(improvement_percentage), 2) AS avg_improve
+ORDER BY age_group

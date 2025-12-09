@@ -1,0 +1,33 @@
+//1. Query 1
+MATCH (t:Traveller)-[:STAYED_AT]->(h:Hotel)-[:LOCATED_IN]->(c:City)-[:LOCATED_IN]->(dest:Country)
+MATCH (t)-[:FROM_COUNTRY]->(origin:Country)
+WHERE origin = dest OR NOT (origin)-[:NEEDS_VISA]->(dest)
+RETURN count(DISTINCT t)
+
+//2. Query 2
+MATCH (t:Traveller {type: 'Business'})-[:WROTE]->(r:Review)-[:REVIEWED]->(h:Hotel)
+RETURN h.name AS Hotel, avg(r.score_overall) AS Average_Rating
+ORDER BY Average_Rating DESC
+LIMIT 3
+
+//3. Query 3
+MATCH (h:Hotel)
+OPTIONAL MATCH (t:Traveller {type: 'Couple'})-[:STAYED_AT]->(h)
+RETURN h.name AS Hotel, count(t) AS Couple_Count
+ORDER BY Hotel
+
+//4. Query 4
+MATCH (r:Review)-[:REVIEWED]->(h:Hotel)
+WITH h, avg(r.score_cleanliness) AS avg_cleanliness
+WHERE avg_cleanliness < 8.8
+RETURN h.name AS Hotel, avg_cleanliness
+ORDER BY avg_cleanliness ASC
+LIMIT 3
+
+//5. Query 5
+MATCH (r:Review)-[:REVIEWED]->(h:Hotel)
+WITH h, avg(r.score_cleanliness) AS avg_cleanliness
+WHERE avg_cleanliness < 8.8
+RETURN h.name AS Hotel, avg_cleanliness
+ORDER BY avg_cleanliness ASC
+LIMIT 3
